@@ -9,4 +9,6 @@ public interface BlogpostService {
     List<Blogpost> findAll();
 //    List<Blogpost> findAllBlogposts();
     Blogpost findByBlogpostId(String id);
+
+    void save(Blogpost blogpost);
 }

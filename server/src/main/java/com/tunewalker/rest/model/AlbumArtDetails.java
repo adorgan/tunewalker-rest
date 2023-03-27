@@ -3,6 +3,10 @@ package com.tunewalker.rest.model;
 public class AlbumArtDetails {
     private String title;
     private String band;
+    private String releaseDate;
+    private String chartPosition;
+
+
 
     public String getTitle() {
         return title;
@@ -36,6 +40,13 @@ public class AlbumArtDetails {
         this.chartPosition = chartPosition;
     }
 
-    private String releaseDate;
-    private String chartPosition;
+    @Override
+    public String toString() {
+        return "AlbumArtDetails{" +
+                "title='" + title + '\'' +
+                ", band='" + band + '\'' +
+                ", releaseDate='" + releaseDate + '\'' +
+                ", chartPosition='" + chartPosition + '\'' +
+                '}';
+    }
 }

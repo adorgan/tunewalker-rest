@@ -26,4 +26,9 @@ public class BlogpostServiceImpl implements BlogpostService {
     public Blogpost findByBlogpostId(String id) {
         return blogpostRepository.findBlogpostById(id);
     }
+
+    @Override
+    public void save(Blogpost blogpost) {
+        blogpostRepository.save(blogpost);
+    }
 }
