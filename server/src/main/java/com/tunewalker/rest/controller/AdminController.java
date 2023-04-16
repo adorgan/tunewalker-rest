@@ -6,7 +6,7 @@ import com.tunewalker.rest.service.AuthService;
 import com.tunewalker.rest.service.BlogpostService;
 import com.tunewalker.rest.service.impl.JwtService;
 import com.tunewalker.rest.util.ObjectMapperUtils;
-import org.apache.coyote.Response;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +28,7 @@ public class AdminController {
 
     @GetMapping(value = "/blogpost/{id}")
     public ResponseEntity<?> getAllBlogpostsAdmin(@PathVariable("id") String id, @RequestHeader(value = "Authorization") String authHeader) {
+
         try {
             if (authHeader == null || !authHeader.contains("Bearer ")) {
                 throw new BadCredentialsException("Invalid Credentials");
@@ -40,6 +41,9 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (UsernameNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+        catch (ExpiredJwtException e){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
 
     }

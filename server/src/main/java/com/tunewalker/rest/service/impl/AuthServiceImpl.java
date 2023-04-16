@@ -1,27 +1,27 @@
 package com.tunewalker.rest.service.impl;
 
+import com.tunewalker.rest.dto.RefreshTokenRequest;
 import com.tunewalker.rest.exceptions.TunewalkerException;
 import com.tunewalker.rest.model.AdminUser;
-import com.tunewalker.rest.model.AuthenticationResponse;
+import com.tunewalker.rest.dto.AuthenticationResponse;
 import com.tunewalker.rest.model.LoginRequest;
 import com.tunewalker.rest.model.RefreshToken;
 import com.tunewalker.rest.repository.AdminUserRepository;
+import com.tunewalker.rest.repository.RefreshTokenRepository;
 import com.tunewalker.rest.service.AuthService;
 import com.tunewalker.rest.util.Decode;
-import io.jsonwebtoken.Jwt;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Base64;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -40,6 +40,9 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     RefreshTokenService refreshTokenService;
 
+    @Autowired
+    RefreshTokenRepository refreshTokenRepository;
+
 
     @Override
     public AuthenticationResponse login(LoginRequest loginRequest) {
@@ -56,9 +59,11 @@ public class AuthServiceImpl implements AuthService {
             );
             String jwt = jwtService.generateToken(user);
             RefreshToken refreshToken =refreshTokenService.generateRefreshToken();
+
             return new AuthenticationResponse.AuthenticationResponseBuilder()
                     .token(jwt)
                     .refreshToken(refreshToken)
+                    .username(username)
                     .build();
         } catch (Exception e) {
             throw new TunewalkerException(e.getMessage());
@@ -102,5 +107,32 @@ public class AuthServiceImpl implements AuthService {
             throw new TunewalkerException(e.getMessage());
         }
 
+    }
+
+    @Override
+    public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+        RefreshToken refreshToken = refreshTokenRepository.findRefreshTokenByToken(refreshTokenRequest.getToken())
+                .orElseThrow(() -> new TunewalkerException("No Refresh Token Found"));
+        AdminUser adminUser = new AdminUser();
+        adminUser.setUsername(refreshTokenRequest.getUsername());
+        String jwt = jwtService.generateToken(adminUser);
+        return new AuthenticationResponse.AuthenticationResponseBuilder()
+                .token(jwt)
+                .refreshToken(refreshToken)
+                .username(refreshTokenRequest.getUsername())
+                .build();
+    }
+
+    @Override
+    public void logout(RefreshTokenRequest refreshTokenRequest) {
+        refreshTokenRepository.deleteByToken(refreshTokenRequest.getToken());
+    }
+
+    private String getJwtFromHeader(String request) {
+
+        if(StringUtils.hasText(request) && request.startsWith("Bearer ")){
+            return request.substring(7);
+        }
+        return request;
     }
 }

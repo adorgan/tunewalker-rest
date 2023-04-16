@@ -1,7 +1,9 @@
-package com.tunewalker.rest.model;
+package com.tunewalker.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.tunewalker.rest.service.impl.AuthServiceImpl;
+import com.tunewalker.rest.model.RefreshToken;
+
+import java.util.Date;
 
 public class AuthenticationResponse {
 
@@ -10,9 +12,13 @@ public class AuthenticationResponse {
     @JsonProperty("refreshToken")
     private String refreshToken;
 
+    @JsonProperty("username")
+    private String username;
+
     private AuthenticationResponse(AuthenticationResponseBuilder builder){
         this.token = builder.token;
         this.refreshToken = builder.refreshToken.getToken();
+        this.username = builder.username;
     }
 
     public String getToken() {
@@ -31,9 +37,18 @@ public class AuthenticationResponse {
         this.refreshToken = refreshToken;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public static class AuthenticationResponseBuilder{
         private String token;
         private RefreshToken refreshToken;
+        private String username;
 
         public AuthenticationResponseBuilder token(String token){
             this.token = token;
@@ -41,6 +56,11 @@ public class AuthenticationResponse {
         }
         public AuthenticationResponseBuilder refreshToken(RefreshToken refreshToken){
             this.refreshToken = refreshToken;
+            return this;
+        }
+
+        public AuthenticationResponseBuilder username(String username){
+            this.username = username;
             return this;
         }
 

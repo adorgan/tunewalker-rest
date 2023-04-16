@@ -99,11 +99,14 @@ public class BlogpostRestController {
             blogpostDTO.setBlogpost_coulda_shoulda_album_art_1(S3Util.S3_URL + prefix + blogpostCouldaAlbumArt1.getOriginalFilename());
             blogpostDTO.setBlogpost_coulda_shoulda_album_art_2(S3Util.S3_URL + prefix + blogpostCouldaAlbumArt2.getOriginalFilename());
             blogpostDTO.setBlogpost_map(S3Util.S3_URL + prefix + blogpostMap.getOriginalFilename());
+            String date = new Date().toString();
+            blogpostDTO.setCreatedAt(date);
+            blogpostDTO.setUpdatedAt(date);
 
             blogpostService.save(ObjectMapperUtils.map(blogpostDTO, Blogpost.class));
 
             return ResponseEntity
-                    .status(HttpStatus.OK)
+                    .status(HttpStatus.CREATED)
                     .body("Files Successfully Uploaded");
         } catch (AwsServiceException | SdkClientException | IOException e) {
             return ResponseEntity
@@ -128,5 +131,18 @@ public class BlogpostRestController {
         Gson gson = new Gson();
         CouldaShouldaDetails couldaShouldaDetails = gson.fromJson(couldaShouldaString, CouldaShouldaDetails.class);
         return couldaShouldaDetails;
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<?> updateBlog(@PathVariable("id") String id, @RequestBody BlogpostDTO blogpostDTO){
+
+        try{
+            blogpostService.updateBlog(ObjectMapperUtils.map(blogpostDTO, Blogpost.class), id);
+            return new ResponseEntity<>("Updated Successfully", HttpStatus.OK);
+        }
+        catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 }
