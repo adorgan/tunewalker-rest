@@ -1,9 +1,15 @@
 package com.tunewalker.rest.controller;
 
 import com.tunewalker.rest.dto.BlogpostDTO;
-import com.tunewalker.rest.model.AdminUser;
+import com.tunewalker.rest.dto.SubscriberDTO;
+import com.tunewalker.rest.exceptions.ReCaptchaException;
+import com.tunewalker.rest.exceptions.TunewalkerException;
+import com.tunewalker.rest.model.MailHelper;
+import com.tunewalker.rest.model.Subscriber;
 import com.tunewalker.rest.service.AuthService;
 import com.tunewalker.rest.service.BlogpostService;
+import com.tunewalker.rest.service.EmailService;
+import com.tunewalker.rest.service.SubscriberService;
 import com.tunewalker.rest.service.impl.JwtService;
 import com.tunewalker.rest.util.ObjectMapperUtils;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -14,6 +20,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping(value = "/admin")
 public class AdminController {
@@ -22,9 +30,12 @@ public class AdminController {
     private AuthService authService;
     @Autowired
     private BlogpostService blogpostService;
-
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    EmailService emailService;
+    @Autowired
+    private SubscriberService subscriberService;
 
     @GetMapping(value = "/blogpost/{id}")
     public ResponseEntity<?> getAllBlogpostsAdmin(@PathVariable("id") String id, @RequestHeader(value = "Authorization") String authHeader) {
@@ -47,4 +58,22 @@ public class AdminController {
         }
 
     }
+
+    @PostMapping(value = "/email")
+    public ResponseEntity<?> sendEmail(){
+        try{
+            MailHelper mail = new MailHelper.Builder()
+                    .from("tim@thetunewalker.com")
+                    .to("adorgan@gmail.com")
+                    .subject("Test Subject")
+                    .body("Test body")
+                    .build();
+            String msg = emailService.sendEmail(mail);
+            return ResponseEntity.status(HttpStatus.OK).body(msg);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 }

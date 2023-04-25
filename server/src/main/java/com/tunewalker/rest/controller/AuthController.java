@@ -27,16 +27,16 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestHeader(value = "Authorization") String authHeader){
-        try{
-            authService.signup(authHeader);
-            return new ResponseEntity<>("Acco", HttpStatus.OK);
-        }
-        catch (TunewalkerException e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
-    }
+//    @PostMapping("/signup")
+//    public ResponseEntity<String> signup(@RequestHeader(value = "Authorization") String authHeader){
+//        try{
+//            authService.signup(authHeader);
+//            return new ResponseEntity<>("Acco", HttpStatus.OK);
+//        }
+//        catch (TunewalkerException e){
+//            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+//        }
+//    }
 
     @PostMapping("/refreshToken")
     public ResponseEntity<?> refreshToken(

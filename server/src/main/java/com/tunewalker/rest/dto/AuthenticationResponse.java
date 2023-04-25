@@ -3,8 +3,6 @@ package com.tunewalker.rest.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tunewalker.rest.model.RefreshToken;
 
-import java.util.Date;
-
 public class AuthenticationResponse {
 
     @JsonProperty("token")

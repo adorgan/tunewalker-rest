@@ -2,10 +2,8 @@ package com.tunewalker.rest.controller;
 
 import com.google.gson.Gson;
 import com.tunewalker.rest.dto.BlogpostDTO;
-import com.tunewalker.rest.model.AlbumArtDetails;
-import com.tunewalker.rest.model.Blogpost;
-import com.tunewalker.rest.model.CouldaShouldaDetails;
-import com.tunewalker.rest.model.MapDetails;
+import com.tunewalker.rest.model.*;
+import com.tunewalker.rest.service.AboutService;
 import com.tunewalker.rest.service.BlogpostService;
 import com.tunewalker.rest.util.ObjectMapperUtils;
 import com.tunewalker.rest.util.S3Util;
@@ -28,11 +26,26 @@ public class BlogpostRestController {
 
     @Autowired
     private BlogpostService blogpostService;
+
+    @Autowired
+    private AboutService aboutService;
+
     @GetMapping(value = "/list")
     public ResponseEntity<List<BlogpostDTO>> getAllBlogposts() {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ObjectMapperUtils.mapAll(blogpostService.findAll(), BlogpostDTO.class));
+    }
+
+    @GetMapping(value = "/about")
+    public ResponseEntity<?> getAboutPost(){
+        try{
+            List<About> aboutList = aboutService.findAll();
+            return ResponseEntity.status(HttpStatus.OK).body(aboutList);
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unable to find any posts");
+        }
+
     }
 
     @GetMapping(value = "/{id}")
@@ -142,6 +155,17 @@ public class BlogpostRestController {
         }
         catch (RuntimeException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<?> deleteBlog(@PathVariable("id") String id){
+        try{
+            blogpostService.delete(id);
+            return ResponseEntity.status(HttpStatus.OK).body("Blogpost successfully deleted");
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
 
     }

@@ -2,3 +2,4 @@
 .idea
 /.idea/libraries/
 /server/src/main/resources/application.properties
+/logs/

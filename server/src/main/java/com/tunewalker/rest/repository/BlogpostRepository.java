@@ -7,5 +7,4 @@ public interface BlogpostRepository extends MongoRepository<Blogpost, String> {
 
     Blogpost findBlogpostById(String id);
 
-//    List<Blogpost> findAllBlogposts();
 }

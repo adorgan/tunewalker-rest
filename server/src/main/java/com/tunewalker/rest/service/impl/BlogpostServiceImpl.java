@@ -1,6 +1,5 @@
 package com.tunewalker.rest.service.impl;
 
-import com.tunewalker.rest.dto.BlogpostDTO;
 import com.tunewalker.rest.model.Blogpost;
 import com.tunewalker.rest.repository.BlogpostRepository;
 import com.tunewalker.rest.service.BlogpostService;
@@ -35,5 +34,10 @@ public class BlogpostServiceImpl implements BlogpostService {
         blogpost.setUpdatedAt(new Date().toString());
         blogpost.setId(id);
         blogpostRepository.save(blogpost);
+    }
+
+    @Override
+    public void delete(String id) {
+        blogpostRepository.deleteById(id);
     }
 }

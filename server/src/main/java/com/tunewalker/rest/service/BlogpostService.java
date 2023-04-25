@@ -8,10 +8,11 @@ import java.util.List;
 public interface BlogpostService {
 
     List<Blogpost> findAll();
-//    List<Blogpost> findAllBlogposts();
     Blogpost findByBlogpostId(String id);
 
     void save(Blogpost blogpost);
 
     void updateBlog(Blogpost blogpost, String id);
+
+    void delete(String id);
 }
